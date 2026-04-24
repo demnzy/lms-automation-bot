@@ -1,0 +1,32 @@
+name: Course Bulk Upload Processor
+
+on:
+  repository_dispatch:
+    types: [process-course-upload]
+
+jobs:
+  process-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install System Dependencies (LibreOffice & Poppler)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice poppler-utils
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python Libraries
+        run: pip install requests pandas pdf2image gdown
+
+      - name: Run Processing Engine
+        env:
+          CLIENT_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+          LMS_EMAIL: ${{ secrets.LMS_EMAIL }}
+          LMS_PASSWORD: ${{ secrets.LMS_PASSWORD }}
+        run: python processor.py

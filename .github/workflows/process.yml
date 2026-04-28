@@ -30,3 +30,9 @@ jobs:
           LMS_EMAIL: ${{ secrets.LMS_EMAIL }}
           LMS_PASSWORD: ${{ secrets.LMS_PASSWORD }}
         run: python processor.py
+        
+      - name: Save CSV for Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-course-schema
+          path: bulk_upload.csv
